@@ -27,18 +27,24 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const UserSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
-        role: { type: String, enum: ["mentee", "mentor"], required: true },
-        expertise: { type: [String], default: [] }, // 🔹 For mentors (AI, Web Dev, Finance, etc.)
-        interests: { type: [String], default: [] }, // 🔹 For mentees to match with mentors
-        availability: { type: String, default: "Flexible" }, // 🔹 Availability status
+const UserSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ["mentee", "mentor"], required: true },
+    expertise: { type: [String], default: [] }, // Mentor expertise
+    interests: { type: [String], default: [] }, // Mentee interests
+    availability: {
+        type: [
+            {
+                day: String, // e.g., "Monday"
+                slots: [{ start: String, end: String }], // Time slots
+            },
+        ],
+        default: [],
     },
-    { timestamps: true }
-);
+});
+
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {
